@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 import getopt, sys, os
 import pkg_resources
 import cmsis_svd
@@ -30,7 +29,9 @@ def pad_comment(s, line_len=80):
     return pat % (s, "-" * (line_len - len(pat)-2*2 - len(s)))
 
 def clean_desc(s):
-    return ' '.join(s.replace("\n", "").split())
+    if s != None:
+        return ' '.join(s.replace("\n", "").split())
+    return ""
 
 cmsis_svd.model.SVDPeripheral.__lt__ = sort_by_base_address
 cmsis_svd.model.SVDRegister.__lt__ = sort_by_address_offset
