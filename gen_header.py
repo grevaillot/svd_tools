@@ -137,37 +137,47 @@ for peripheral in sorted(parser.get_device().peripherals):
             continue
 
     peripheral_str = "#pragma once \n\n"
+
     peripheral_str += pad_comment("%s: %s" % (peripheral.name, clean_desc(peripheral.description))) + "\n\n"
+
+    peripheral_str += "/** @defgroup %s_registers %s Register\n" % (peripheral.name.lower(), peripheral.description)
+    peripheral_str += "@{*/\n\n"
 
     for register in sorted(peripheral.registers):
         register_name = "%s_%s" % (peripheral.name, register.name)
+        if (not no_doxygen):
+            peripheral_str += "/** %s %s **/\n" % (register_name, clean_desc(register.description))
         peripheral_str += "#define %s\t\t\tMMIO32(%s + 0x%02x)\n" % (register_name, peripheral.name + "_BASE", register.address_offset)
 
+    peripheral_str += "\n/**@}*/\n"
     peripheral_str += "\n"
 
     for register in sorted(peripheral.registers):
         register_name = "%s_%s" % (peripheral.name, register.name)
-        register_str = "\n" + pad_comment("%s values" % (register_name)) + "\n\n"
+        register_str = "\n" #"\n" + pad_comment("%s values" % (register_name)) + "\n\n"
+        if (not no_doxygen):
+            register_str += "/** @defgroup %s %s %s\n" % (register_name.lower(), register.name.replace("_",""), clean_desc(register.description))
+            register_str += "@{*/\n\n"
+
         for field in sorted(register.fields):
             field_name = "%s_%s" % (register_name, field.name)
             field_str = ""
-            if (not no_comments):
-                field_str += "\n// %s: %s\n" % (field_name, clean_desc(field.description))
-            if (not no_doxygen):
-                field_str += "\n/* @def %s\n" % (field_name)
-                field_str += "* @brief %s */\n" % (clean_desc(field.description))
             if (field.bit_width > 1):
+                field_str += "\n"
                 field_str += "#define %s_SHIFT\t\t%d\n" % (field_name, field.bit_offset)
                 field_str += "#define %s_MASK\t\t0x%02x\n" % (field_name, (1 << field.bit_width) - 1)
                 if (not no_doxygen):
-                    field_str += "/** @defgroup %s %s\n" % (field_name.lower(), field.name.replace("_",""))
-                    field_str += "* @brief %s\n" % (clean_desc(field.description))
+                    field_str += "/** @defgroup %s %s %s\n" % (field_name.lower(), field.name.replace("_",""), clean_desc(field.description))
                     field_str += "@{*/\n"
-                    field_str += "/*@}*/\n"
+                    field_str += "/**@}*/\n\n"
             else:
+                if (not no_doxygen):
+                    field_str += "/** %s %s **/\n" % (field_name, clean_desc(field.description))
                 field_str += "#define %s\t\t(1 << %d)\n" %(field_name, field.bit_offset)
 
             register_str += field_str
+        if (not no_doxygen):
+            register_str += "\n/**@}*/\n"
         peripheral_str += register_str 
 
 

@@ -1,0 +1,8 @@
+
+svd_load 
+svd_set PERIF REG val
+svd PERIF REG with working tab
+svd_dump PERIF
+
+
+
