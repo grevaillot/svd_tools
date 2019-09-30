@@ -41,13 +41,14 @@ def usage(msg=None):
     if (msg != None):
         print(msg)
     print("""usage: %s [-d device or -s file.svd] [options]
-    -d: svd device file to load
+    -d: device name
+    -s: svd file
     -w: write output
     -l: list cmsis_svd devices'""" % sys.argv[0])
     exit(1)
 
 try:
-    opts, args = getopt.getopt(sys.argv[1:], "ld:cp:w", ["list", "device", "no_comment", "peripheral"])
+    opts, args = getopt.getopt(sys.argv[1:], "ld:s:cp:w", ["list", "device", "no_comment", "peripheral"])
 except getopt.GetoptError as err:
     print(str(err))
     usage()
