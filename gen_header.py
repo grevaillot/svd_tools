@@ -137,6 +137,9 @@ for peripheral in sorted(parser.get_device().peripherals):
         if (peripheral.name != selected_peripheral):
             continue
 
+    if (peripheral.derived_from != None):
+        continue
+
     peripheral_str = "#pragma once \n\n"
 
     peripheral_str += pad_comment("%s: %s" % (peripheral.name, clean_desc(peripheral.description))) + "\n\n"
